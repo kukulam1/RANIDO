@@ -1,0 +1,8 @@
+postres sql
+-instalace
+-syntax
+-sqlite
+-port
+-ip
+
+
