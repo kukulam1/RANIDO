@@ -1,13 +1,12 @@
 import string
 from psycopg2 import connect
 
-def execAndPrintQuery(cursor, query: string):
+def exec_query(cursor, query: string):
     cursor.execute(query)
     if ( query.split()[0] == "select" ):
-        for row in cursor:
-            print(row)
+        print_query(cursor)
 
-def closeConnection():
+def close_connection():
     print("Commiting changes and closing connection...")
 
 def get_dsn():
@@ -15,27 +14,30 @@ def get_dsn():
     dbname = input("Enter dbname: ")
     user   = input("Enter user: ")
     passwd = input("Enter passwd: ")
-#    if not host:
-#        host = "/var/run/postgresql"
-#    if not dbname:
-#        dbname = "matej"
-#    if not user:
-#        user = "matej"  
+    if not host:
+        host = "/var/run/postgresql"
+    if not dbname:
+        dbname = "matej"
+    if not user:
+        user = "matej"  
     return "host={} dbname={} user={} password={}".format(host, dbname, user, passwd)
 
 def print_menu():
     print("Hello this is your database script!")
- 
+
+def print_query(cursor):
+    for row in cursor:
+        print(row)
 def run(cur,conn):
     inp = ''
     while True:
         inp = input("Enter your query or q to quit:\n")
         if ( inp == 'q' ):
-            closeConnection()
+            close_connection()
             return
         else:
             try:
-                execAndPrintQuery(cur,inp)
+                exec_query(cur,inp)
             except:
                 print("Could not resolve your query!")
                 conn.rollback()
