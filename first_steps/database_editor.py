@@ -1,52 +1,62 @@
 import string
-import psycopg2
+from psycopg2 import connect
 
-def ExecAndPrintQuery(cursor, query: string):
+def execAndPrintQuery(cursor, query: string):
     cursor.execute(query)
-    for row in cursor:
-        print(row)
-
-def Insert():
-    print("Insert")
-
-def getSelect():
-    columns = input("What columns you want to select?\n")
-    table  = input("From what talbe you want to select?\n")
-    return "SELECT " + columns + " FROM " + table + ';'
+    if ( query.split()[0] == "select" ):
+        for row in cursor:
+            print(row)
 
 def closeConnection():
-    print("Closing connection...")
+    print("Commiting changes and closing connection...")
 
-def getDsn(passwd: string, host = "/var/run/postgresql",
-           dbname = "matej", user = "matej" ):
-        return "host={} dbname={} user={} password={}".format(host, dbname, user, passwd)
+def get_dsn():
+    host   = input("Enter host: ")
+    dbname = input("Enter dbname: ")
+    user   = input("Enter user: ")
+    passwd = input("Enter passwd: ")
+#    if not host:
+#        host = "/var/run/postgresql"
+#    if not dbname:
+#        dbname = "matej"
+#    if not user:
+#        user = "matej"  
+    return "host={} dbname={} user={} password={}".format(host, dbname, user, passwd)
 
-def printMenu():
+def print_menu():
     print("Hello this is your database script!")
-    print("Commands: i (INSERT) | s (SELECT) | q (quit).")
  
-def run(cursor):
+def run(cur,conn):
     inp = ''
-    while inp != 'q':
-        inp = input()
-        if   inp == 'i':
-            Insert(cursor)
-        elif inp == 's':
-            query = getSelect()
-            ExecAndPrintQuery(cursor,query)
-        elif inp == 'q':
+    while True:
+        inp = input("Enter your query or q to quit:\n")
+        if ( inp == 'q' ):
             closeConnection()
             return
         else:
-            print("Wrong option, try again.")
-            
-def main():
-    passwd = input("Type your password:")
-    dsn = getDsn(passwd)
-    conn = psycopg2.connect(dsn)
+            try:
+                execAndPrintQuery(cur,inp)
+            except:
+                print("Could not resolve your query!")
+                conn.rollback()
+
+def connection_init():
+    dsn = get_dsn()
+    try:
+        conn = connect(dsn)
+    except:
+        print("Could not connect to PostrgreSQL!")
+        return None, None
     cur = conn.cursor()
-    printMenu()
-    run(cur)
+    return conn, cur
+    
+def main():
+    print_menu()
+    conn, cur = connection_init()
+    if ( conn == None ):
+        return
+    run(cur,conn)
+    conn.commit()
     cur.close()
     conn.close()
 
