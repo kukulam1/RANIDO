@@ -14,12 +14,6 @@ def get_dsn():
     dbname = input("Enter dbname: ")
     user   = input("Enter user: ")
     passwd = input("Enter passwd: ")
-    if not host:
-        host = "/var/run/postgresql"
-    if not dbname:
-        dbname = "matej"
-    if not user:
-        user = "matej"  
     return "host={} dbname={} user={} password={}".format(host, dbname, user, passwd)
 
 def print_menu():
