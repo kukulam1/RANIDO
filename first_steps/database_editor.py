@@ -10,9 +10,9 @@ def close_connection():
     print("Commiting changes and closing connection...")
 
 def get_dsn():
-    host   = input("Enter host: ")
+    host   = "localhost"
     dbname = input("Enter dbname: ")
-    user   = input("Enter user: ")
+    user   = "Postgres"
     passwd = input("Enter passwd: ")
     return "host={} dbname={} user={} password={}".format(host, dbname, user, passwd)
 

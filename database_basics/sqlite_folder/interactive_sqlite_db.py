@@ -1,5 +1,6 @@
 import sqlite3
 from sqlite3 import Error
+from sys import stderr
 
 # Connect to database, create it if it does not exists
 def connection_init():
@@ -77,7 +78,7 @@ def main():
                 case 'e':
                     break
     except Error as e:
-        print(e)
+        print( e, stderr)
 
     connection.close()
 
