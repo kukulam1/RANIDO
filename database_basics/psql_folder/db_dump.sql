@@ -16,6 +16,19 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+--
+-- Name: mood; Type: TYPE; Schema: public; Owner: matej
+--
+
+CREATE TYPE public.mood AS ENUM (
+    'sad',
+    'good',
+    'great'
+);
+
+
+ALTER TYPE public.mood OWNER TO matej;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -26,7 +39,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.jobs (
     name character varying(255) NOT NULL,
-    salary integer
+    salary money
 );
 
 
@@ -40,7 +53,10 @@ CREATE TABLE public.people (
     id integer NOT NULL,
     name character varying(255) NOT NULL,
     age integer,
-    job character varying(255) NOT NULL
+    job character varying(255) NOT NULL,
+    joined timestamp without time zone,
+    birthday date,
+    current_mood public.mood
 );
 
 
@@ -80,9 +96,10 @@ ALTER TABLE ONLY public.people ALTER COLUMN id SET DEFAULT nextval('public.perso
 --
 
 COPY public.jobs (name, salary) FROM stdin;
-IT	5000
-Seller	10000
-Manager	20000
+Lawyer	5 000,00 Kč
+IT	10 000,00 Kč
+Seller	20 000,00 Kč
+Manager	30 000,00 Kč
 \.
 
 
@@ -90,11 +107,11 @@ Manager	20000
 -- Data for Name: people; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.people (id, name, age, job) FROM stdin;
-1	Matej	24	IT
-2	Jan	17	Seller
-3	Anna	35	Manager
-4	Hana	62	IT
+COPY public.people (id, name, age, job, joined, birthday, current_mood) FROM stdin;
+1	Matej	24	IT	2022-05-24 09:27:01.69267	1998-03-07	good
+2	Jan	17	Seller	2022-05-24 09:27:12.919558	1994-04-07	good
+3	Anna	35	Manager	2022-05-24 09:27:18.275579	1968-11-23	sad
+4	Hana	62	IT	2022-05-24 09:27:24.711319	2006-12-24	great
 \.
 
 
@@ -102,7 +119,7 @@ COPY public.people (id, name, age, job) FROM stdin;
 -- Name: persons_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.persons_id_seq', 9, true);
+SELECT pg_catalog.setval('public.persons_id_seq', 17, true);
 
 
 --

@@ -4,10 +4,10 @@ from psycopg2 import connect
 from psycopg2 import Error
 from sys import stderr
 
-# Connect to database, create it if it does not exists
+# Connect to database
 def connection_init():
     passwd = input("Enter password: ")
-    dsn = f'host=localhost dbname=tesktdb user=matej password={passwd}'
+    dsn = f'host=localhost dbname=testdb user=matej password={passwd}'
     return connect(dsn)
 
 # Select records
@@ -35,7 +35,7 @@ def update_record( cursor, table='people', set='name=\'newbie\'', id='id=5' ):
     print("Update record.")    
 
 # Insert record into table
-def insert_record( cursor, table = 'people ( name, age, job)', value='( \'new_member\', 99, \'IT\')' ):
+def insert_record( cursor, table = 'people ( id, name, age, job)', value='( 5,\'new_member\', 99, \'IT\')' ):
     sql = f'INSERT INTO ' + table + ' VALUES ' + value
     cursor.execute(sql)
     print("Insert record.")
@@ -43,6 +43,7 @@ def insert_record( cursor, table = 'people ( name, age, job)', value='( \'new_me
 # Saves current state of database into dump file
 def save_database():
     subprocess.run( ['pg_dump', 'testdb', '-f', 'db_dump.sql'] )
+    print("Save database.")
 
 
 def main():
@@ -65,6 +66,10 @@ def main():
 
     update_record( cursor )
     select_records( cursor )
+
+    save_database()
+
+
 
     connection.close()
 
