@@ -29,6 +29,22 @@ CREATE TYPE public.mood AS ENUM (
 
 ALTER TYPE public.mood OWNER TO matej;
 
+--
+-- Name: jobs_update(); Type: FUNCTION; Schema: public; Owner: matej
+--
+
+CREATE FUNCTION public.jobs_update() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+begin
+   new.updated_on = now();
+   return new;
+end;
+$$;
+
+
+ALTER FUNCTION public.jobs_update() OWNER TO matej;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -39,7 +55,8 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.jobs (
     name character varying(255) NOT NULL,
-    salary money
+    salary money,
+    updated_on timestamp without time zone DEFAULT now()
 );
 
 
@@ -54,7 +71,7 @@ CREATE TABLE public.people (
     name character varying(255) NOT NULL,
     age integer,
     job character varying(255) NOT NULL,
-    joined timestamp without time zone,
+    joined timestamp without time zone DEFAULT now(),
     birthday date,
     current_mood public.mood
 );
@@ -95,11 +112,11 @@ ALTER TABLE ONLY public.people ALTER COLUMN id SET DEFAULT nextval('public.perso
 -- Data for Name: jobs; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.jobs (name, salary) FROM stdin;
-Lawyer	5 000,00 Kč
-IT	10 000,00 Kč
-Seller	20 000,00 Kč
-Manager	30 000,00 Kč
+COPY public.jobs (name, salary, updated_on) FROM stdin;
+IT	10 000,00 Kč	2022-05-25 09:00:57.74178
+Seller	20 000,00 Kč	2022-05-25 09:00:57.74178
+Manager	30 000,00 Kč	2022-05-25 09:00:57.74178
+Lawyer	50 000,00 Kč	2022-05-25 09:14:46.460532
 \.
 
 
@@ -136,6 +153,13 @@ ALTER TABLE ONLY public.jobs
 
 ALTER TABLE ONLY public.people
     ADD CONSTRAINT persons_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jobs update_jobs_timestamp; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_jobs_timestamp BEFORE UPDATE ON public.jobs FOR EACH ROW EXECUTE FUNCTION public.jobs_update();
 
 
 --
